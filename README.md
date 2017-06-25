@@ -1,4 +1,7 @@
 # m2c
+
+[![Join the chat at https://gitter.im/m2bsk/Lobby](https://badges.gitter.im/m2bsk/Lobby.svg)](https://gitter.im/m2bsk/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Modula-2 to C Translator and Compiler
 
 M2C is a multi-dialect Modula-2 to C translator and via-C compiler. It supports the dialects described in the 3rd and 4th editions of Niklaus Wirth's book "Programming in Modula-2" (PIM) published by Springer Verlag, and an extended mode with select features from the revised language by B.Kowarsch and R.Sutcliffe "Modula-2 Revision 2010" (M2R10).
