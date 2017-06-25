@@ -1,6 +1,6 @@
 # m2c
 
-[![Join the chat at https://gitter.im/m2bsk/Lobby](https://badges.gitter.im/m2bsk/Lobby.svg)](https://gitter.im/m2bsk/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/modula-2/Lobby](https://badges.gitter.im/modula-2/Lobby.svg)](https://gitter.im/modula-2/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Modula-2 to C Translator and Compiler
 
