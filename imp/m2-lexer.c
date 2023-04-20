@@ -805,15 +805,6 @@ static void get_new_lookahead_sym (m2c_lexer_t lexer) {
         token = TOKEN_DEREF;
         break;
         
-      case '_' :
-        if (!m2c_option_lowline_identifiers()) {
-          report_error_w_offending_char
-            (M2C_ERROR_INVALID_INPUT_CHAR, lexer, line, column, next_char);
-          next_char = m2c_consume_char(lexer->infile);
-          token = TOKEN_UNKNOWN;
-          break;
-        } /* end if */
-        
       case 'a' :
       case 'b' :
       case 'c' :
@@ -1110,14 +1101,27 @@ static char get_pragma(m2c_lexer_t lexer) {
 static char get_ident(m2c_lexer_t lexer) {
   
   char next_char;
+  char next_next_char;
   
   m2c_mark_lexeme(lexer->infile);
-  next_char = m2c_next_char(lexer->infile);
+  next_char = m2c_consume_char(lexer->infile);
+  next_next_char = m2c_la2_char(lexer->infile);
   
-  while (IS_ALPHANUMERIC(next_char) ||
-         (m2c_option_lowline_identifiers() && next_char == '_')) {
-    next_char = m2c_consume_char(lexer->infile);
-  } /* end while */
+  /* lowline enabled */
+  if (m2c_option_lowline_identifiers()) {
+    while (IS_ALPHANUMERIC(next_char) ||
+           (next_char == '_' && IS_ALPHANUMERIC(next_next_char))) {
+      next_char = m2c_consume_char(lexer->infile);
+      next_next_char = m2c_la2_char(lexer->infile);
+    } /* end while */
+  }
+  
+  /* lowline disabled */
+  else {
+    while (IS_ALPHANUMERIC(next_char)) {
+      next_char = m2c_consume_char(lexer->infile);
+    } /* end while */
+  } /* end if */
   
   /* get lexeme */
   lexer->lookahead.lexeme = m2c_read_marked_lexeme(lexer->infile);
