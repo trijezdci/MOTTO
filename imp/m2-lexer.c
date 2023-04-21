@@ -1142,19 +1142,37 @@ static char get_ident_or_resword(m2c_lexer_t lexer, m2c_token_t *token) {
   m2c_token_t intermediate_token;
   bool possibly_resword = true;
   char next_char;
+  char next_next_char;
   
   m2c_mark_lexeme(lexer->infile);
   next_char = m2c_next_char(lexer->infile);
+  next_next_char = m2c_la2_char(lexer->infile);
   
-  while (IS_ALPHANUMERIC(next_char) ||
-         (m2c_option_lowline_identifiers() && next_char == '_')) {
-    
-    if (IS_NOT_UPPER(next_char)) {
-      possibly_resword = false;
-    } /* end if */
-    
-    next_char = m2c_consume_char(lexer->infile);
-  } /* end while */
+  /* lowline enabled */
+  if (m2c_option_lowline_identifiers()) {
+    while (IS_ALPHANUMERIC(next_char) ||
+           (next_char == '_' && IS_ALPHANUMERIC(next_next_char))) {
+      
+      if (IS_NOT_UPPER(next_char)) {
+        possibly_resword = false;
+      } /* end if */
+      
+      next_char = m2c_consume_char(lexer->infile);
+      next_next_char = m2c_la2_char(lexer->infile);
+    } /* end while */
+  }
+  
+  /* lowline disabled */
+  else {
+    while (IS_ALPHANUMERIC(next_char)) {
+      
+      if (IS_NOT_UPPER(next_char)) {
+        possibly_resword = false;
+      } /* end if */
+      
+      next_char = m2c_consume_char(lexer->infile);
+    } /* end while */
+  } /* end if */
   
   /* get lexeme */
   lexer->lookahead.lexeme = m2c_read_marked_lexeme(lexer->infile);
@@ -1178,7 +1196,6 @@ static char get_ident_or_resword(m2c_lexer_t lexer, m2c_token_t *token) {
   
   return next_char;
 } /* end get_ident_or_resword */
-
 
 /* --------------------------------------------------------------------------
  * private function get_string_literal(lexer)
