@@ -1,272 +1,162 @@
-Mapping Modula-2 Names to C
+Mapping Identifiers from Modula-2 to C
 
-Draft Version 1.04 (2023-04-15)
+All Modula-2 identifiers are converted to a C representation in snake_case or MACRO_CASE, depending
+on the object they represent. In order to convert a Modula-2 identifier to its C representation,
+it is first split at word boundaries, the resulting components are then converted to all-lowercase
+or all-uppercase, and are then rejoined by inserting a lowline _ between any two components.
+Certain types of identifiers are additionally prefixed or suffixed or both.
 
 
-Limitations
+Word Boundaries
 
-Identifiers containing lowline characters cannot be mapped.
+Word boundaries in the Modula-2 identifier are determined as follows:
 
+(1) a sequence of lowercase letters and digits preceding a capital letter, or
 
+(2) a sequence of capital letters and digits preceding a sequence of a capital letter followed by
+    lowercase letters and digits
 
-Definitions
+sets the word boundary before the capital letter;
 
+(3) a sequence of a capital letters followed by digits preceding a sequence of lowercase letters
+    sets the word boundary before the first lowercase letter.
 
-Lowercase Alphanumeric Word
+(4) where lowlines are enabled and used, any lowline sets the word boundary at the lowline.
 
-lowercaseAlphanumWord :
-  lowercaseLetter ( lowercaseLetter | digit )*
-  ;
 
-Capitalized Alphanumeric Word
+Module Prefixes
 
-capitalisedAlphanumWord :
-  uppercaseLetter ( lowercaseLetter | digit )*
-  ;
+The C representations of all exported and all imported Modula-2 identifiers are qualified with a
+module prefix, derived from the module identifier of the module that exports the identifier.
+However, this does not apply to identifiers exported by and imported from local modules.
 
-All-Caps Alphanumeric Word
+To derive the module prefix for C macro identifiers, the module identifier is converted to
+MACRO_CASE. To derive the module prefix for all other C identifiers, the module identifier
+is converted to snake_case. To obtain the C representation of the fully qualified identifier,
+the derived module prefix is prepended to the C representation of the unqualified identifier
+while two lowlines __ are inserted between them.
 
-allCapsAlphanumWord :
-  uppercaseLetter ( uppercaseLetter | digit )*
-  ;
 
-Camel Case Identifier
+Local Suffixes
 
-camelCaseIdent :
-  lowercaseAlphanumWord capitalisedAlphanumWord*
-  ;
+With the exception of local variable identifiers, the C representation of all other local
+identifiers are qualified with a local suffix, derived from the base-36 representation of a hash
+value computed from the identifier of the surrounding function, procedure or local module.
 
-Title Case Identifier
-
-titleCaseIdent :
-  capitalisedAlphanumWord+
-  ;
-
-All-Caps Identifier
-
-alias allCapsAlphanumIdent = allCapsAlphanumWord ;
-
-
-Modula-2 Identifier
-
-M2Ident :
-  ( lowercaseAlphanumWord | capitalisedAlphanumWord )*
-  ( allCapsAlphanumWord capitalisedAlphanumWord* )*
-  ;
-
-
-Lowline Separated Lowercase Transformation
-
-To transform a Modula-2 identifier to lowline separated lowercase, the identifier is split at word boundaries. The resulting components are converted to all-lowercase and rejoined with single lowline characters between them.
-
-
-Lowline Separated Uppercase Transformation
-
-To transform a Modula-2 identifier to lowline separated lowercase, the identifier is split at word boundaries. The resulting component words are converted to all-uppercase and rejoined with single lowline characters between them.
-
-
-
-Module Identifiers
-
-
-Requirement
-
-Modula-2 module identifiers must always be capitalized or in title case.
-
-Transformation
-
-Modula-2 module identifiers are mapped to C identifiers by lowline separated lowercase transformation.
-
-Examples
-
-ISO646 => iso646
-RealMath => real_math
-FileSystem => file_system
-
-
-
-Type Identifiers
-
-
-Requirement
-
-Modula-2 type identifiers must always be capitalized or in title case.
-
-Transformation
-
-Modula-2 type identifiers are mapped to C identifiers by lowline separated lowercase transformation. The result is then suffixed with "_t".
-
-Examples
-
-Foo => foo_t
-FooBar => foo_bar_t
-FooBarBaz => foo_bar_baz_t
-
-
-
-Function identifiers
-
-
-Requirement
-
-Modula-2 function identifiers must always be lowercase or in camel case.
-
-Transformation
-
-Modula-2 function identifiers are mapped to C identifiers by lowline separated lowercase transformation without any prefix.
-
-Examples
-
-foo() => foo()
-fooBar() => foo_bar()
-fooBarBaz() => foo_bar_baz()
-binary2decimal() => binary2decimal()
-
-
-
-Procedure identifiers
-
-
-Requirement
-
-Modula-2 procedure identifiers must always be capitalized or in title case.
-
-Transformation
-
-Modula-2 procedure identifiers are mapped to C identifiers by lowline separated lowercase transformation. The result is then prefixed with "void_".
-
-Examples
-
-Foo() => void_foo()
-FooBar => void_foo_bar()
-FooBarBaz => void_foo_bar_baz()
-
-
-
-Variable Identifiers
-
-
-Requirement
-
-Modula-2 variable identifiers must always be lowercase or in camel case.
-
-Transformation
-
-Modula-2 variable identifiers are mapped to C identifiers by lowline separated lowercase transformation.
-
-Examples
-
-n1 => n1
-foo => foo
-fooBar => foo_bar
-fooBarBaz => foo_bar_baz
-
-
+To obtain the C representation of the fully qualified identifier, the derived local suffix is
+appended to the C representation of the unqualified identifier while a lowline followed by
+digit zero _0 is inserted between them.
 
 
 Constant Identifiers
 
-
-Requirement
-
-Modula-2 constant identifiers must always be capitalized or in title case.
-
-Transformation
-
-Modula-2 constant identifiers are mapped to C identifiers by lowline separated uppercase transformation.
+To obtain the C representation of a Modula-2 constant identifier, the identifier is converted
+to MACRO_CASE.
 
 Examples
 
-Foo => FOO
-FooBar => FOO_BAR
-FooBarBaz => FOO_BAR_BAZ
+* A non-local non-exported Modula-2 constant FooBar is mapped to FOO_BAR.
+* A Modula-2 constant BazBam exported by module FooBar is mapped to FOO_BAR__BAZ_BAM.
+* A local Modula-2 constant BazBam in procedure FooBar is mapped to BAZ_BAM_0XXXXX
+  where XXXXX is the base-36 hash value of FooBar.
 
 
+Enumerated Value Identifiers
 
-Exported Identifiers
+The C representations of all Modula-2 enumerated value identifiers are qualified with an
+enumeration prefix, derived from the type identifier of their respective enumeration type
+converted to MACRO_CASE.
 
-The transformations of exported identifiers are prefixed with a module prefix. The module prefix is composed of the module identifier of the exporting module followed by two lowline characters.
-
-
-Examples
-
-FooLib.barBaz() => foo_lib__bar_baz() /* exported function */
-FooLib.BarBaz() => foo_lib_void_bar_baz() /* exported procedure */
-FooLib.barBaz => foo_lib__bar_baz /* exported variable */
-FooLib.BarBaz => foo_lib__BAR_BAZ /* exported constant */
-
-
-
-Local Scope Identifiers
-
-Transformation
-
-The transformations of procedure, function or constant identifiers declared in local scope are suffixed with a local suffix. The local suffix is composed of a lowline character followed by zero followed by the all-uppercase base-36 hash value of the qualified name of the surrounding procedure or function without module prefix. The number of digits of the hash value is implementation defined but should be chosen sufficiently to avoid hash collisions.
+To obtain the C representation of a Modula-2 enumerated value identifier, the identifier
+is converted to MACRO_CASE and the enumeration prefix is prepended while a lowline _ is
+inserted between them.
 
 Examples
 
-fooBar() => foo_bar_04CZ6B /* local function */
-FooBar() => void_foo_bar_05XT83 /* local procedure */
-FooBar => FOO_BAR_0N08UX /* local constant */
+Given the enumeration type declaration TYPE Color = ( Red, Green, Blue );
+
+* If type Color is non-local and non-exported, Red is mapped to COLOR_RED.
+* If type Color is exported by module Graphics, Red is mapped to GRAPHICS__COLOR_RED.
+* If type Color is declared local in procedure Draw, Red is mapped to COLOR_RED_0XXXXX
+  where XXXXX is the base-36 hash value of Draw.
 
 
+Type Identifiers
 
-Identifiers Matching Reserved Words in C
+The C representations of all Modula-2 type identifiers are marked with the type suffix _t.
 
-Translations of Modula-2 identifiers that match reserved words in C have their first letter converted to uppercase.
+To obtain the C representation of a type identifier, the identifier is converted to
+snake_case and the type suffix is appended.
+
+Examples
+
+* A non-local non-exported Modula-2 type identifier FooBar is mapped to foo_bar_t.
+* A Modula-2 type identifier BazBam exported by module FooBar is mapped to foo_bar__baz_bam_t.
+* A local Modula-2 type identifier BazBam in procedure FooBar is mapped to baz_bam_t_0XXXXX
+  where XXXXX is the base-36 hash value of FooBar.
+
+
+Variable Identifiers
+
+To obtain the C representation of a Modula-2 variable identifier, the identifier is converted
+to snake_case.
+
+Examples
+
+* A non-local non-exported Modula-2 variable identifier fooBar is mapped to foo_bar.
+* A Modula-2 variable identifier bazBam exported by module FooBar is mapped to foo_bar__baz_bam.
+* A local Modula-2 variable identifier bazBam in procedure FooBar is mapped to baz_bam without
+  local suffix.
+
+
+Function Identifiers
+
+To obtain the C representation of a Modula-2 function identifier, the identifier is converted
+to snake_case.
+
+Examples
+
+* A non-local non-exported Modula-2 function identifier fooBar is mapped to foo_bar.
+* A Modula-2 function identifier bazBam exported by module FooBar is mapped to foo_bar__baz_bam.
+* A local Modula-2 function identifier bazBam in procedure FooBar is mapped to baz_bam_0XXXXX
+  where XXXXX is the base-36 hash value of FooBar.
+
+
+Procedure Identifiers
+
+The C representations of all Modula-2 procedure identifiers are marked with the procedure
+prefix void_.
+
+To obtain the C representation of a procedure identifier, the identifier is converted to
+snake_case and the procedure prefix is prepended.
+
+Examples
+
+* A non-local non-exported Modula-2 procedure identifier FooBar is mapped to void_foo_bar.
+* A Modula-2 procedure identifier BazBam exported by module FooBar is mapped to foo_bar__void_baz_bam.
+* A local Modula-2 procedure identifier BazBam in procedure FooBar is mapped to void_baz_bam_0XXXXX
+  where XXXXX is the base-36 hash value of FooBar.
+
+
+Identifiers whose Mapping coincides with Reserved Words of C
+
+Where the final C representation of a Modula-2 identifier coincides with a reserved word of C,
+its first letter is capitalised.
 
 Example
 
-switch => Switch
-float() => Float()
+* A local Modula-2 variable switch is mapped to Switch.
 
 
+Naming Convention
 
-Changing the Mapping Behaviour
+This mapping scheme was designed with the common Modula-2 naming convention in mind, under which:
 
+* Module, type and procedure identifiers are in TitleCase,
+* Math constant, variable and function identifiers are in camelCase,
+* Other constant identifiers are consistently either in camelCase or TitleCase.
 
-The mapping of names may be altered by compiler/translator pragmas. However, changing the default mapping behaviour may produce name collisions.
-
-
-
-Specifying a Custom Name Mapping
-
-In order to override the default mapping of a given identifier, a custom name may be specified. A compiler pragma for this purpose may be implemented. The pragma should then follow the identifier within its definition or declaration.
-
-Examples
-
-DEFINITION MODULE FooBar (*$CNAME="fblib"*);
-TYPE StringT (*$CNAME="str_t"*);
-
-
-Suppressing the Module Prefix
-
-In order to map exported Modula-2 identifiers into a flat namespace, the module prefix may be suppressed for all identifiers defined or declared within a Modula-2 compilation unit. A compiler pragma for this purpose may be implemented. The pragma should then follow the module identifier within the module header.
-
-
-Example
-
-DEFINITION MODULE FooLib (*$FLATNAMESPACE*);
-
-
-Suppressing the Void Prefix
-
-In order to map a given Modula-2 procedure identifier to a C identifier without prefixing, the void prefix may be suppressed. A compiler pragma for this purpose may be implemented. The pragma should then follow the identifier within its definition or declaration.
-
-Example
-
-PROCEDURE SetFoo (*$NOPREFIX*) ( foo : Foo ); => set_foo()
-
-
-Suppressing the Local Suffix
-
-In order to map a given local Modula-2 constant, procedure or function identifier to a C identifier without suffixing, the hash value suffix may be suppressed. A compiler pragma for this purpose may be implemented. The pragma should then follow the identifier within its definition or declaration.
-
-Examples
-
-PROCEDURE OuterFoo ( foo : Foo );
-  CONST BazBam (*$NOSUFFIX*) = 0; => BAZ_BAM
-  PROCEDURE InnerFoo (*$NOSUFFIX*) ( bar : Bar ); => void_inner_foo()
+However, the scheme should also work when using other naming conventions.
 
 
 [END OF DOCUMENT]
