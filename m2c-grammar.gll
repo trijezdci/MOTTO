@@ -199,11 +199,19 @@ countableType :=
   ;
 
 
-/* Array Type */
+/* Array Type (PIM) */
 
 arrayType :=
-  ARRAY OF countableType ( ',' countableType )* OF type
+  ARRAY countableType ( ',' countableType )* OF type
   ;
+
+/* Array Type (Extended) */
+
+arrayType :=
+  ARRAY capacity OF type
+  ;
+  
+alias capacity = constExpression;
 
 
 /* Record Type (PIM) */
