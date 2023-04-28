@@ -6,6 +6,8 @@ M2T is a multi-dialect Modula-2 translator. It supports the classic Modula-2 dia
 
 M2T translates source files written in the classic dialects to semantically equivalent source files in Modula-2 Revision 2010 (M2R10).
 
+As of April 2023, the project has been repurposed from its original objective to translate Modula-2 to C and rework will take some time.
+
 For more details please visit the project wiki at the URL:
 https://github.com/trijezdci/m2t/wiki
 
