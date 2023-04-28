@@ -451,19 +451,27 @@ typeDeclaration :=
   Ident '=' ( type | varSizeRecordType )
   ;
 
+/* Private Pointer Type */
 
-/* Variable Size Record Type */
+privatePointerType :=
+  POINTER TO ( determinateTarget | indeterminateTarget )
+  ;
 
-varSizeRecordType :=
-  VAR RECORD fieldListSequence
-  IN indeterminateField
+alias determinateTarget = Ident;
+
+
+/* Indeterminate Target */
+
+indeterminateTarget :=
+  RECORD fieldListSequence
+  indeterminateField
   END
   ;
 
 /* Indeterminate Field */
 
 indeterminateField :=
-  Ident : ARRAY sizeFieldIdent OF typeIdent
+  '+' Ident : ARRAY sizeFieldIdent OF typeIdent
   ;
 
 alias sizeFieldIdent = Ident;
