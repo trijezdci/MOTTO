@@ -190,8 +190,7 @@ const char *m2t_get_cli_args
   
   const char *filename, *optstr;
   uint_t index, error_count;
-  bool permit_pim_option = true;
-  bool permit_non_pim_option = true;
+  bool no_dialect_set = true;
   
   if ((argc < 2) || (argv == NULL)) {
     m2t_emit_error(M2T_ERROR_MISSING_FILENAME);
@@ -273,138 +272,93 @@ const char *m2t_get_cli_args
       }
       else if ((permit_pim_option) && (opt_match(optstr, "--pim2"))) {
         options = pim2_options;
-        permit_pim_option = false;
-        permit_non_pim_option = false;
+        no_dialect_set = false;
       }
       else if ((permit_pim_option) && (opt_match(optstr, "--pim3"))) {
         options = pim3_options;
-        permit_pim_option = false;
-        permit_non_pim_option = false;
-      }
+        no_dialect_set = false;
+     }
       else if ((permit_pim_option) && (opt_match(optstr, "--pim4"))) {
         options = pim4_options;
-        permit_pim_option = false;
-        permit_non_pim_option = false;
+        no_dialect_set = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--synonyms"))) {
+      else if (opt_match(optstr, "--synonyms")) {
         options.synonyms = true;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--no-synonyms"))) {
+      else if (opt_match(optstr, "--no-synonyms")) {
         options.synonyms = false;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--octal-literals"))) {
+      else if (opt_match(optstr, "--octal-literals")) {
         options.octal_literals = true;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--no-octal-literals"))) {
+      else if (opt_match(optstr, "--no-octal-literals")) {
         options.octal_literals = false;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--escape-tab-and-newline"))) {
+      else if (opt_match(optstr, "--escape-tab-and-newline")) {
         options.escape_tab_and_newline = true;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--no-escape-tab-and-newline"))) {
+      else if (opt_match(optstr, "--no-escape-tab-and-newline")) {
         options.escape_tab_and_newline = false;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
+      else if ((no_dialect_set) &&
                (opt_match(optstr, "--export-lists"))) {
         options.export_lists = true;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
+      else if ((no_dialect_set) &&
                (opt_match(optstr, "--no-export-lists"))) {
         options.export_lists = false;
-        permit_pim_option = false;
       }
-       else if ((permit_non_pim_option) &&
+       else if ((no_dialect_set) &&
                (opt_match(optstr, "--subtype-cardinals"))) {
         options.subtype_cardinals = true;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
+      else if ((no_dialect_set) &&
                (opt_match(optstr, "--no-subtype-cardinals"))) {
         options.subtype_cardinals = false;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
+      else if ((no_dialect_set) &&
                (opt_match(optstr, "--safe-string-termination"))) {
         options.safe_string_termination = true;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
+      else if ((no_dialect_set) &&
                (opt_match(optstr, "--no-safe-string-termination"))) {
         options.safe_string_termination = false;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--type-byte"))) {
+      else if (opt_match(optstr, "--type-byte")) {
         options.type_byte = true;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--no-type-byte"))) {
+      else if (opt_match(optstr, "--no-type-byte")) {
         options.type_byte = false;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--type-longcard"))) {
+      else if (opt_match(optstr, "--type-longcard")) {
         options.type_longcard = true;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--no-type-longcard"))) {
-        options.atype_longcard = false;
-        permit_pim_option = false;
+      else if (opt_match(optstr, "--no-type-longcard")) {
+        options.type_longcard = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--unified-cast"))) {
+      else if (opt_match(optstr, "--unified-cast"))) {
         options.unified_cast = true;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--no-unified-cast"))) {
+      else if (opt_match(optstr, "--no-unified-cast")) {
         options.unified_cast = false;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--coroutines"))) {
+      else if (opt_match(optstr, "--coroutines")) {
         options.coroutines = true;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--no-coroutines"))) {
+      else if (opt_match(optstr, "--no-coroutines")) {
         options.coroutines = false;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--variant-records"))) {
+      else if (opt_match(optstr, "--variant-records")) {
         options.variant_records = true;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--no-variant-records"))) {
+      else if (opt_match(optstr, "--no-variant-records")) {
         options.variant_records = false;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--local-modules"))) {
+      else if (opt_match(optstr, "--local-modules")) {
         options.local_modules = true;
-        permit_pim_option = false;
       }
-      else if ((permit_non_pim_option) &&
-               (opt_match(optstr, "--no-local-modules"))) {
+      else if (opt_match(optstr, "--no-local-modules")) {
         options.local_modules = false;
-        permit_pim_option = false;
       }
       else {
         report_invalid_option(optstr);
