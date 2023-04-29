@@ -517,7 +517,7 @@ bool m2t_option_escape_tab_and_newline (void) {
  * ----------------------------------------------------------------------- */
 
 bool m2t_option_subtypem2t_option_export_list_cardinals (void) {
-  return options.export-lists;
+  return options.export_lists;
 } /* end m2t_option_export_lists */
 
 
