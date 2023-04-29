@@ -57,7 +57,7 @@ typedef struct {
   bool synonyms;
   bool octal_literals;
   bool escape_tab_and_newline;
-  bool export_list;
+  bool export_lists;
   bool subtype_cardinals;
   bool safe_string_termination;
   bool errant_semicolon;
@@ -81,7 +81,7 @@ typedef struct {
   /* synonyms */ false, \
   /* octal-literals */ false, \
   /* escape-tab-and-newline */ true, \
-  /* export_list */ true, \
+  /* export_lists */ true, \
   /* subtype-cardinals */ false, \
   /* safe-string-termination */ true, \
   /* errant-semicolon */ false, \
@@ -100,7 +100,7 @@ typedef struct {
   /* synonyms */ true, \
   /* octal-literals */ true, \
   /* escape-tab-and-newline */ false, \
-  /* export_list */ true, \
+  /* export_lists */ true, \
   /* subtype-cardinals */ false, \
   /* safe-string-termination */ false, \
   /* errant-semicolon */ false, \
@@ -118,7 +118,7 @@ typedef struct {
   /* synonyms */ true, \
   /* octal-literals */ true, \
   /* escape-tab-and-newline */ false, \
-  /* export_list */ false, \
+  /* export_lists */ false, \
   /* subtype-cardinals */ false, \
   /* safe-string-termination */ false, \
   /* errant-semicolon */ false, \
@@ -137,7 +137,7 @@ typedef struct {
   /* synonyms */ true, \
   /* octal-literals */ true, \
   /* escape-tab-and-newline */ false, \
-  /* export_list */ false, \
+  /* export_lists */ false, \
   /* subtype-cardinals */ true, \
   /* safe-string-termination */ true, \
   /* errant-semicolon */ false, \
@@ -317,6 +317,16 @@ const char *m2t_get_cli_args
         permit_pim_option = false;
       }
       else if ((permit_non_pim_option) &&
+               (opt_match(optstr, "--export-lists"))) {
+        options.export_lists = true;
+        permit_pim_option = false;
+      }
+      else if ((permit_non_pim_option) &&
+               (opt_match(optstr, "--no-export-lists"))) {
+        options.export_lists = false;
+        permit_pim_option = false;
+      }
+       else if ((permit_non_pim_option) &&
                (opt_match(optstr, "--subtype-cardinals"))) {
         options.subtype_cardinals = true;
         permit_pim_option = false;
@@ -432,7 +442,7 @@ void m2t_print_options(void) {
   printf(" escape-tab-and-newline: ");
     print_bool(options.escape_tab_and_newline); printf("\n");
   printf(" export-list: ");
-    print_bool(options.export_list); printf("\n");
+    print_bool(options.export_lists); printf("\n");
   printf(" subtype-cardinals: ");
     print_bool(options.subtype_cardinals); printf("\n");
   printf(" safe-string-termination: ");
@@ -481,7 +491,7 @@ void m2t_print_option_help(void) {
   printf(" allow or disallow octal literals, only with --suffix-literals\n");
   printf("--escape-tab-and-newline and --no-escape-tab-and-newline\n");
   printf(" interpret '\\\\', '\\t' and '\\n' in string literals or not\n");
-  printf("--export-list and --no-export-list\n");
+  printf("--export-lists and --no-export-lists\n");
   printf(" allow export lists in definition modules or not\n");
   printf("--subtype-cardinals and --no-subtype-cardinals\n");
   printf(" cardinal types are subtypes of integers or not\n");
@@ -547,14 +557,14 @@ bool m2t_option_escape_tab_and_newline (void) {
 
 
 /* --------------------------------------------------------------------------
- * function m2t_option_export_list()
+ * function m2t_option_export_lists()
  * --------------------------------------------------------------------------
- * Returns true if option flag export_list is set, otherwise false.
+ * Returns true if option flag export_lists is set, otherwise false.
  * ----------------------------------------------------------------------- */
 
 bool m2t_option_subtypem2t_option_export_list_cardinals (void) {
-  return options.export-list;
-} /* end m2t_option_export_list */
+  return options.export-lists;
+} /* end m2t_option_export_lists */
 
 
 /* --------------------------------------------------------------------------
