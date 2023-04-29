@@ -20,9 +20,9 @@
  *
  * @file
  *
- * m2t-compiler-options.h
+ * m2t-option-flags.h
  *
- * Public interface for M2T compiler options.
+ * Public interface for M2T option flags.
  *
  * @license
  *
@@ -38,8 +38,8 @@
  * along with M2T.  If not, see <https://www.gnu.org/copyleft/lesser.html>.
  */
 
-#ifndef M2T_COMPILER_OPTIONS_H
-#define M2T_COMPILER_OPTIONS_H
+#ifndef M2T_OPTION_FLAGS_H
+#define M2T_OPTION_FLAGS_H
 
 #include <stdbool.h>
 
@@ -222,6 +222,6 @@ bool m2t_option_lexer_debug (void);
 bool m2t_option_parser_debug (void);
 
 
-#endif /* M2T_COMPILER_OPTIONS_H */
+#endif /* M2T_OPTION_FLAGS_H */
 
 /* END OF FILE */
