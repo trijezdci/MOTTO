@@ -1,50 +1,55 @@
-/* M2C Modula-2 Compiler & Translator
- * Copyright (c) 2015-2016 Benjamin Kowarsch
+/* M2T -- Sorce to Source Modula-2 Translator
+ *
+ * Copyright (c) 2016-2023 Benjamin Kowarsch
+ *
+ * Author & Maintainer: Benjamin Kowarsch <org.m2sf>
  *
  * @synopsis
  *
- * M2C is a compiler and translator for the classic Modula-2 programming
- * language as described in the 3rd and 4th editions of Niklaus Wirth's
- * book "Programming in Modula-2" (PIM) published by Springer Verlag.
+ * M2T is a multi-dialect Modula-2 source-to-source translator. It translates
+ * source files  written in the  classic dialects  to semantically equivalent
+ * source files in  Modula-2 Revision 2010 (M2R10).  It supports  the classic
+ * Modula-2 dialects  described in  the 2nd, 3rd and 4th editions  of Niklaus
+ * Wirth's book "Programming in Modula-2" (PIM) published by Springer Verlag.
  *
- * In compiler mode, M2C compiles Modula-2 source via C to object files or
- * executables using the host system's resident C compiler and linker.
- * In translator mode, it translates Modula-2 source to C source.
+ * For more details please visit: https://github.com/trijezdci/m2t/wiki
  *
- * Further information at http://savannah.nongnu.org/projects/m2c/
+ * @repository
+ *
+ * https://github.com/trijezdci/m2t
  *
  * @file
  *
- * m2-token.c
+ * m2t-token.c
  *
- * M2C token type implementation.
+ * M2T token type implementation.
  *
  * @license
  *
- * M2C is free software: you can redistribute and/or modify it under the
- * terms of the GNU Lesser General Public License (LGPL) either version 2.1
- * or at your choice version 3 as published by the Free Software Foundation.
+ * M2T is free software:  You can redistribute and modify it  under the terms
+ * of the  GNU Lesser General Public License (LGPL) either version 2.1  or at
+ * your choice version 3, both as published by the Free Software Foundation.
  *
- * M2C is distributed in the hope that it will be useful,  but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  Read the license for more details.
+ * M2T is distributed  in the hope  that it will be useful,  but  WITHOUT ANY
+ * WARRANTY; without even  the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR ANY PARTICULAR PURPOSE.  Read the license for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with m2c.  If not, see <https://www.gnu.org/copyleft/lesser.html>.
+ * You should have received  a copy of the  GNU Lesser General Public License
+ * along with M2T.  If not, see <https://www.gnu.org/copyleft/lesser.html>.
  */
 
-#include "m2-token.h"
+#include "m2t-token.h"
 
 #include <stddef.h>
 
 
 /* --------------------------------------------------------------------------
- * array m2c_token_name_table
+ * array m2t_token_name_table
  * --------------------------------------------------------------------------
  * Human readable names for tokens.
  * ----------------------------------------------------------------------- */
 
-static const char *m2c_token_name_table[] = {
+static const char *m2t_token_name_table[] = {
   /* Null Token */
   
   "UNKNOWN",
@@ -147,12 +152,12 @@ static const char *m2c_token_name_table[] = {
 
 
 /* --------------------------------------------------------------------------
- * array m2c_resword_lexeme_table
+ * array m2t_resword_lexeme_table
  * --------------------------------------------------------------------------
  * Lexeme strings for reserved word tokens.
  * ----------------------------------------------------------------------- */
 
-static const char *m2c_resword_lexeme_table[] = {
+static const char *m2t_resword_lexeme_table[] = {
   
   /* dummy */
   "\0",
@@ -199,16 +204,16 @@ static const char *m2c_resword_lexeme_table[] = {
   "WHILE\0",
   "WITH\0",
 
-}; /* end m2c_resword_lexeme_table */
+}; /* end m2t_resword_lexeme_table */
 
 
 /* --------------------------------------------------------------------------
- * array m2c_special_symbol_lexeme_table
+ * array m2t_special_symbol_lexeme_table
  * --------------------------------------------------------------------------
  * Lexeme strings for special symbol tokens.
  * ----------------------------------------------------------------------- */
 
-static const char *m2c_special_symbol_lexeme_table[] = {
+static const char *m2t_special_symbol_lexeme_table[] = {
   
   "+\0",  /* PLUS */
   "-\0",  /* MINUS */
@@ -235,7 +240,7 @@ static const char *m2c_special_symbol_lexeme_table[] = {
   "{\0",  /* LEFT-BRACE */ 
   "}\0"   /* RIGHT-BRACE */ 
   
-}; /* end m2c_special_symbol_lexeme_table */
+}; /* end m2t_special_symbol_lexeme_table */
 
 
 /* --------------------------------------------------------------------------
@@ -267,69 +272,69 @@ static bool str_match (const char *str1, const char *str2) {
 
 
 /* --------------------------------------------------------------------------
- * function m2c_is_valid_token(token)
+ * function m2t_is_valid_token(token)
  * --------------------------------------------------------------------------
  * Returns true if token represents a terminal symbol, otherwise false.
  * ----------------------------------------------------------------------- */
 
-inline bool m2c_is_valid_token (m2c_token_t token) {
+inline bool m2t_is_valid_token (m2t_token_t token) {
   return ((token > TOKEN_UNKNOWN) && (token < TOKEN_END_MARK));
 } /* end  */
 
 
 /* --------------------------------------------------------------------------
- * function m2c_is_resword_token(token)
+ * function m2t_is_resword_token(token)
  * --------------------------------------------------------------------------
  * Returns true if token represents a reserved word, otherwise false.
  * ----------------------------------------------------------------------- */
 
-inline bool m2c_is_resword_token (m2c_token_t token) {
+inline bool m2t_is_resword_token (m2t_token_t token) {
   return ((token >= TOKEN_AND) && (token <= TOKEN_WITH));
-} /* end m2c_is_resword_token */
+} /* end m2t_is_resword_token */
 
 
 /* --------------------------------------------------------------------------
- * function m2c_is_literal_token(token)
+ * function m2t_is_literal_token(token)
  * --------------------------------------------------------------------------
  * Returns true if token represents a literal, otherwise false.
  * ----------------------------------------------------------------------- */
 
-inline bool m2c_is_literal_token (m2c_token_t token) {
+inline bool m2t_is_literal_token (m2t_token_t token) {
   return ((token >= TOKEN_STRING) && (token <= TOKEN_CHAR));
-} /* end m2c_is_literal_token */
+} /* end m2t_is_literal_token */
 
 
 /* --------------------------------------------------------------------------
- * function m2c_is_malformed_literal_token(token)
+ * function m2t_is_malformed_literal_token(token)
  * --------------------------------------------------------------------------
  * Returns TRUE if token represents a malformed literal, otherwise FALSE.
  * ----------------------------------------------------------------------- */
 
-inline bool m2c_is_malformed_literal_token (m2c_token_t token) {
+inline bool m2t_is_malformed_literal_token (m2t_token_t token) {
   return ((token >= TOKEN_MALFORMED_STRING) &&
           (token <= TOKEN_MALFORMED_REAL));
-} /* end m2c_is_malformed_literal_token */
+} /* end m2t_is_malformed_literal_token */
 
 
 /* --------------------------------------------------------------------------
- * function m2c_is_special_symbol_token(token)
+ * function m2t_is_special_symbol_token(token)
  * --------------------------------------------------------------------------
  * Returns TRUE if token represents a special symbol, otherwise FALSE.
  * ----------------------------------------------------------------------- */
 
-inline bool m2c_is_special_symbol_token (m2c_token_t token) {
+inline bool m2t_is_special_symbol_token (m2t_token_t token) {
   return ((token >= TOKEN_ADDITION) && (token <= TOKEN_RIGHT_BRACE));
-} /* end m2c_is_special_symbol_token */
+} /* end m2t_is_special_symbol_token */
 
 
 /* --------------------------------------------------------------------------
- * function m2c_token_for_resword(lexeme, length)
+ * function m2t_token_for_resword(lexeme, length)
  * --------------------------------------------------------------------------
  * Tests if the given lexeme represents a reserved word and returns the
  * corresponding token or TOKEN_UNKNOWN if it does not match a reserved word.
  * ----------------------------------------------------------------------- */
 
-m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
+m2t_token_t m2t_token_for_resword (const char *lexeme, uint_t length) {
   
   /* verify pre-conditions */
   if ((lexeme == NULL) || (length < 2) || (length > 14)) {
@@ -409,7 +414,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
       
 	    case 'A' :
 	      /* AND */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_AND])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_AND])) {
 	        return TOKEN_AND;
 	      }
 	      
@@ -419,7 +424,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
         	
 	    case 'D' :
 	      /* DIV */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_DIV])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_DIV])) {
 	        return TOKEN_DIV;
 	      }
 	      
@@ -429,7 +434,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	
 	    case 'E' :
 	      /* END */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_END])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_END])) {
 	        return TOKEN_END;
 	      }
 	      
@@ -439,7 +444,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'F' :
 	      /* FOR */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_FOR])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_FOR])) {
 	        return TOKEN_FOR;
 	      }
 	      
@@ -449,7 +454,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'M' :
 	      /* MOD */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_MOD])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_MOD])) {
 	        return TOKEN_MOD;
 	      }
 	      
@@ -459,7 +464,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'N' :
 	      /* NOT */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_NOT])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_NOT])) {
 	        return TOKEN_NOT;
 	      }
 	      
@@ -469,7 +474,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'S' :
 	      /* SET */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_SET])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_SET])) {
 	        return TOKEN_SET;
 	      }
 	      
@@ -479,7 +484,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'V' :
 	      /* VAR */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_VAR])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_VAR])) {
 	        return TOKEN_VAR;
 	      }
 	      
@@ -496,7 +501,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
       
 	    case 'A' :
 	      /* CASE */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_CASE])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_CASE])) {
 	        return TOKEN_CASE;
 	      }
 	      
@@ -506,7 +511,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'H' :
 	      /* THEN */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_THEN])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_THEN])) {
 	        return TOKEN_THEN;
 	      }
 	      
@@ -516,7 +521,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'I' :
 	      /* WITH */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_WITH])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_WITH])) {
 	        return TOKEN_WITH;
 	      }
 	      
@@ -526,7 +531,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'L' :
 	      /* ELSE */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_ELSE])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_ELSE])) {
 	        return TOKEN_ELSE;
 	      }
 	      
@@ -536,7 +541,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'O' :
 	      /* LOOP */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_LOOP])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_LOOP])) {
 	        return TOKEN_LOOP;
 	      }
 	      
@@ -546,7 +551,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'R' :
 	      /* FROM */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_FROM])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_FROM])) {
 	        return TOKEN_FROM;
 	      }
 	      
@@ -556,7 +561,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'X' :
 	      /* EXIT */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_EXIT])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_EXIT])) {
 	        return TOKEN_EXIT;
 	      }
 	      
@@ -566,7 +571,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
         case 'Y' :
           /* TYPE */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_TYPE])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_TYPE])) {
 	        return TOKEN_TYPE;
 	      }
 	      
@@ -583,7 +588,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
       
 	    case 'A' :
 	      /* ARRAY */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_ARRAY])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_ARRAY])) {
 	        return TOKEN_ARRAY;
 	      }
 	      
@@ -593,7 +598,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'B' :
 	      /* BEGIN */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_BEGIN])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_BEGIN])) {
 	        return TOKEN_BEGIN;
 	      }
 	      
@@ -603,7 +608,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'C' :
 	      /* CONST */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_CONST])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_CONST])) {
 	        return TOKEN_CONST;
 	      }
 	      
@@ -613,7 +618,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'E' :
 	      /* ELSIF */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_ELSIF])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_ELSIF])) {
 	        return TOKEN_ELSIF;
 	      }
 	      
@@ -623,7 +628,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'U' :
 	      /* UNTIL */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_UNTIL])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_UNTIL])) {
 	        return TOKEN_UNTIL;
 	      }
 	      
@@ -633,7 +638,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'W' :
 	      /* WHILE */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_WHILE])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_WHILE])) {
 	        return TOKEN_WHILE;
 	      }
 	      
@@ -650,7 +655,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
       
 	    case 'E' :
 	      /* MODULE */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_MODULE])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_MODULE])) {
 	        return TOKEN_MODULE;
 	      }
 	      
@@ -660,7 +665,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'D' :
 	      /* RECORD */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_RECORD])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_RECORD])) {
 	        return TOKEN_RECORD;
 	      }
 	      
@@ -670,7 +675,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	    case 'N' :
 	      /* RETURN */
-	      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_RETURN])) {
+	      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_RETURN])) {
 	        return TOKEN_RETURN;
 	      }
 	      
@@ -683,7 +688,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	      
 	        case 'E' :
 	          /* EXPORT */
-	          if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_EXPORT])) {
+	          if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_EXPORT])) {
 	            return TOKEN_EXPORT;
 	          }
 	          
@@ -693,7 +698,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	        
 	        case 'I' :
 	          /* IMPORT */
-	          if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_IMPORT])) {
+	          if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_IMPORT])) {
 	            return TOKEN_IMPORT;
 	          }
 	          
@@ -703,7 +708,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	        
 	        case 'R' :
 	          /* REPEAT */
-	          if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_REPEAT])) {
+	          if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_REPEAT])) {
 	            return TOKEN_REPEAT;
 	          }
 	          
@@ -721,7 +726,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	
     case /* length = 7 */ 7 :
       /* POINTER */
-      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_POINTER])) {
+      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_POINTER])) {
 	    return TOKEN_POINTER;
       }
       
@@ -734,7 +739,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
       
         case 'P' :
           /* PROCEDURE */
-          if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_PROCEDURE])) {
+          if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_PROCEDURE])) {
 	        return TOKEN_PROCEDURE;
           }
           
@@ -744,7 +749,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
         
         case 'Q' :
           /* QUALIFIED */
-          if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_QUALIFIED])) {
+          if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_QUALIFIED])) {
 	        return TOKEN_QUALIFIED;
           }
           
@@ -758,7 +763,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
 	
     case /* length = 10 */ 10 :
       /* DEFINITION */
-      if (str_match(lexeme, m2c_resword_lexeme_table[TOKEN_DEFINITION])) {
+      if (str_match(lexeme, m2t_resword_lexeme_table[TOKEN_DEFINITION])) {
 	    return TOKEN_DEFINITION;
       }
       
@@ -769,7 +774,7 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
     case /* length = 14 */ 14 :
       /* IMPLEMENTATION */
       if (str_match(lexeme,
-          m2c_resword_lexeme_table[TOKEN_IMPLEMENTATION])) {
+          m2t_resword_lexeme_table[TOKEN_IMPLEMENTATION])) {
 	    return TOKEN_IMPLEMENTATION;
       }
       
@@ -780,18 +785,18 @@ m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length) {
     default :
       return TOKEN_UNKNOWN;
   } /* end switch (length) */
-} /* end m2c_token_for_resword */
+} /* end m2t_token_for_resword */
 
 
 /* --------------------------------------------------------------------------
- * function m2c_lexeme_for_resword(token)
+ * function m2t_lexeme_for_resword(token)
  * --------------------------------------------------------------------------
  * Returns an immutable pointer to a NUL terminated character string with
  * the lexeme for the reserved word represented by token.  Returns NULL
  * if the token does not represent a reserved word.
  * ----------------------------------------------------------------------- */
 
-const char *m2c_lexeme_for_resword (m2c_token_t token) {
+const char *m2t_lexeme_for_resword (m2t_token_t token) {
   uint_t index;
   
   /* check pre-conditions */
@@ -803,20 +808,20 @@ const char *m2c_lexeme_for_resword (m2c_token_t token) {
   index = (uint_t) token;
     
   /* return lexeme */
-  return m2c_resword_lexeme_table[index];
+  return m2t_resword_lexeme_table[index];
   
-} /* end m2c_lexeme_for_resword */
+} /* end m2t_lexeme_for_resword */
 
 
 /* --------------------------------------------------------------------------
- * function m2c_lexeme_for_special_symbol(token)
+ * function m2t_lexeme_for_special_symbol(token)
  * --------------------------------------------------------------------------
  * Returns an immutable pointer to a NUL terminated character string with
  * the lexeme for the special symbol represented by token.  Returns NULL
  * if the token does not represent a special symbol.
  * ----------------------------------------------------------------------- */
 
-const char *m2c_lexeme_for_special_symbol (m2c_token_t token) {
+const char *m2t_lexeme_for_special_symbol (m2t_token_t token) {
   uint_t index;
   
   /* check pre-conditions */
@@ -828,25 +833,25 @@ const char *m2c_lexeme_for_special_symbol (m2c_token_t token) {
   index = token - FIRST_SPECIAL_SYMBOL_TOKEN;
   
   /* return lexeme */
-  return m2c_special_symbol_lexeme_table[index];
+  return m2t_special_symbol_lexeme_table[index];
   
-} /* end m2c_lexeme_for_special_symbol */
+} /* end m2t_lexeme_for_special_symbol */
 
 
 /* --------------------------------------------------------------------------
- * function m2c_name_for_token(token)
+ * function m2t_name_for_token(token)
  * --------------------------------------------------------------------------
  * Returns an immutable pointer to a NUL terminated character string with
  * a human readable name for token.  Returns NULL token is not a valid token.
  * ----------------------------------------------------------------------- */
 
-const char *m2c_name_for_token (m2c_token_t token) {
+const char *m2t_name_for_token (m2t_token_t token) {
   if (token < TOKEN_END_MARK) {
-    return m2c_token_name_table[token];
+    return m2t_token_name_table[token];
   }
   else /* invalid token */ {
     return NULL;
   } /* end if */
-} /* end m2c_name_for_token */
+} /* end m2t_name_for_token */
 
 /* END OF FILE */
