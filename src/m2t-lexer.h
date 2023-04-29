@@ -35,7 +35,7 @@
  * FITNESS FOR A PARTICULAR PURPOSE.  Read the license for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with m2c.  If not, see <https://www.gnu.org/copyleft/lesser.html>.
+ * along with m2t.  If not, see <https://www.gnu.org/copyleft/lesser.html>.
  */
 
 #ifndef M2T_LEXER_H
@@ -235,7 +235,7 @@ uint_t m2t_lexer_current_column (m2t_lexer_t lexer);
 
 
 /* --------------------------------------------------------------------------
- * procedure m2c_print_line_and_mark_column(lexer, line, column)
+ * procedure m2t_print_line_and_mark_column(lexer, line, column)
  * --------------------------------------------------------------------------
  * Prints the given source line of the current symbol to the console and
  * marks the given coloumn with a caret '^'.
