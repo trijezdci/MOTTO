@@ -1,40 +1,45 @@
-/* M2C Modula-2 Compiler & Translator
- * Copyright (c) 2015-2016 Benjamin Kowarsch
+/* M2T -- Sorce to Source Modula-2 Translator
+ *
+ * Copyright (c) 2016-2023 Benjamin Kowarsch
+ *
+ * Author & Maintainer: Benjamin Kowarsch <org.m2sf>
  *
  * @synopsis
  *
- * M2C is a compiler and translator for the classic Modula-2 programming
- * language as described in the 3rd and 4th editions of Niklaus Wirth's
- * book "Programming in Modula-2" (PIM) published by Springer Verlag.
+ * M2T is a multi-dialect Modula-2 source-to-source translator. It translates
+ * source files  written in the  classic dialects  to semantically equivalent
+ * source files in  Modula-2 Revision 2010 (M2R10).  It supports  the classic
+ * Modula-2 dialects  described in  the 2nd, 3rd and 4th editions  of Niklaus
+ * Wirth's book "Programming in Modula-2" (PIM) published by Springer Verlag.
  *
- * In compiler mode, M2C compiles Modula-2 source via C to object files or
- * executables using the host system's resident C compiler and linker.
- * In translator mode, it translates Modula-2 source to C source.
+ * For more details please visit: https://github.com/trijezdci/m2t/wiki
  *
- * Further information at http://savannah.nongnu.org/projects/m2c/
+ * @repository
+ *
+ * https://github.com/trijezdci/m2t
  *
  * @file
  *
- * m2-common.h
+ * m2t-common.h
  *
  * Common definitions.
  *
  * @license
  *
- * M2C is free software: you can redistribute and/or modify it under the
+ * M2T is free software: you can redistribute and/or modify it under the
  * terms of the GNU Lesser General Public License (LGPL) either version 2.1
  * or at your choice version 3 as published by the Free Software Foundation.
  *
- * M2C is distributed in the hope that it will be useful,  but WITHOUT
+ * M2T is distributed in the hope that it will be useful,  but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE.  Read the license for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with m2c.  If not, see <https://www.gnu.org/copyleft/lesser.html>.
+ * along with m2t.  If not, see <https://www.gnu.org/copyleft/lesser.html>.
  */
 
-#ifndef M2C_COMMON_H
-#define M2C_COMMON_H
+#ifndef M2T_COMMON_H
+#define M2T_COMMON_H
 
 /* --------------------------------------------------------------------------
  * Import integer types
@@ -50,9 +55,9 @@
  * Identification
  * ----------------------------------------------------------------------- */
 
-#define M2C_IDENTIFICATION "M2C Modula-2 Compiler & Translator"
+#define M2T_IDENTIFICATION "M2T Modula-2 Translator"
 
-#define M2C_VERSION "1.00"
+#define M2T_VERSION "1.00"
 
 
 /* --------------------------------------------------------------------------
@@ -127,40 +132,84 @@ typedef void *address_t;
  * Common M2 types
  * ----------------------------------------------------------------------- */
 
-#define m2c_byte_t m2c_octet_t
+#define m2t_byte_t m2c_octet_t
 
-#define m2c_address_t address_t
+#define m2t_address_t address_t
 
-typedef uint8_t m2c_octet_t;
+typedef uint8_t m2t_octet_t;
 
-typedef unsigned char m2c_char_t;
+typedef unsigned char m2t_char_t;
 
-typedef unsigned int m2c_cardinal_t;
+typedef unsigned int m2t_cardinal_t;
 
-typedef long unsigned int m2c_longcard_t;
+typedef long unsigned int m2t_longcard_t;
 
-typedef int m2c_integer_t;
+typedef int m2t_integer_t;
 
-typedef long int m2c_longint_t;
+typedef long int m2t_longint_t;
 
-typedef float m2c_real_t;
+typedef float m2t_real_t;
 
-typedef double m2c_longreal_t;
+typedef double m2t_longreal_t;
 
 
 /* ==========================================================================
  * Verify build parameters
  * ======================================================================= */
 
-#include "m2-build-params.h"
+#include "m2t-build-params.h"
+
+/* --------------------------------------------------------------------------
+ * Verify M2T_MAX_IDENT_LENGTH
+ * ----------------------------------------------------------------------- */
+
+#if !defined(M2T_MAX_IDENT_LENGTH)
+#error "no value defined for M2T_MAX_IDENT_LENGTH"
+#endif
 
 
 /* --------------------------------------------------------------------------
- * Verify M2C_COROUTINES_IMPLEMENTED
+ * Verify M2T_MAX_NUMBER_LENGTH
  * ----------------------------------------------------------------------- */
 
-#if !defined(M2C_COROUTINES_IMPLEMENTED)
-#error "no value defined for M2C_COROUTINES_IMPLEMENTED"
+#if !defined(M2T_MAX_NUMBER_LENGTH)
+#error "no value defined for M2T_MAX_NUMBER_LENGTH"
+#endif
+
+
+/* --------------------------------------------------------------------------
+ * Verify M2T_MAX_STRING_LENGTH
+ * ----------------------------------------------------------------------- */
+
+#if !defined(M2T_MAX_STRING_LENGTH)
+#error "no value defined for M2T_MAX_STRING_LENGTH"
+#endif
+
+
+/* --------------------------------------------------------------------------
+ * Verify M2T_MAX_COMMENT_LENGTH
+ * ----------------------------------------------------------------------- */
+
+#if !defined(M2T_MAX_COMMENT_LENGTH)
+#error "no value defined for M2T_MAX_COMMENT_LENGTH"
+#endif
+
+
+/* --------------------------------------------------------------------------
+ * Verify M2T_COMMENT_NESTING_LIMIT
+ * ----------------------------------------------------------------------- */
+
+#if !defined(M2T_COMMENT_NESTING_LIMIT)
+#error "no value defined for M2T_COMMENT_NESTING_LIMIT"
+#endif
+
+
+/* --------------------------------------------------------------------------
+ * Verify M2T_COROUTINES_IMPLEMENTED
+ * ----------------------------------------------------------------------- */
+
+#if !defined(M2T_COROUTINES_IMPLEMENTED)
+#error "no value defined for M2T_COROUTINES_IMPLEMENTED"
 #endif
 
 
@@ -168,11 +217,29 @@ typedef double m2c_longreal_t;
  * Verify M2C_LOCAL_MODULES_IMPLEMENTED
  * ----------------------------------------------------------------------- */
 
-#if !defined(M2C_LOCAL_MODULES_IMPLEMENTED)
-#error "no value defined for M2C_LOCAL_MODULES_IMPLEMENTED"
+#if !defined(M2T_LOCAL_MODULES_IMPLEMENTED)
+#error "no value defined for M2T_LOCAL_MODULES_IMPLEMENTED"
 #endif
 
 
-#endif /* M2C_COMMON_H */
+/* --------------------------------------------------------------------------
+ * Verify M2C_VARIANT_RECORDS_IMPLEMENTED
+ * ----------------------------------------------------------------------- */
+
+#if !defined(M2C_VARIANT_RECORDS_IMPLEMENTED)
+#error "no value defined for M2C_VARIANT_RECORDS_IMPLEMENTED"
+#endif
+
+
+/* --------------------------------------------------------------------------
+ * Verify M2T_COMMENT_PRESRVN_IMPLEMENTED
+ * ----------------------------------------------------------------------- */
+
+#if !defined(M2T_COMMENT_PRESRVN_IMPLEMENTED)
+#error "no value defined for M2T_COMMENT_PRESRVN_IMPLEMENTED"
+#endif
+
+
+#endif /* M2T_COMMON_H */
 
 /* END OF FILE */
