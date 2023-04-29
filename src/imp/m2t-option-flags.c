@@ -57,6 +57,7 @@ typedef struct {
   bool synonyms;
   bool octal_literals;
   bool escape_tab_and_newline;
+  bool export_list;
   bool subtype_cardinals;
   bool safe_string_termination;
   bool errant_semicolon;
@@ -80,6 +81,7 @@ typedef struct {
   /* synonyms */ false, \
   /* octal-literals */ false, \
   /* escape-tab-and-newline */ true, \
+  /* export_list */ true, \
   /* subtype-cardinals */ false, \
   /* safe-string-termination */ true, \
   /* errant-semicolon */ false, \
@@ -93,11 +95,30 @@ typedef struct {
   /* parser-debug */ false \
 } /* default_options */
 
+#define M2T_PIM2_OPTIONS { \
+  /* verbose */ false, \
+  /* synonyms */ true, \
+  /* octal-literals */ true, \
+  /* escape-tab-and-newline */ false, \
+  /* export_list */ true, \
+  /* subtype-cardinals */ false, \
+  /* safe-string-termination */ false, \
+  /* errant-semicolon */ false, \
+  /* type_byte */ false, \
+  /* type_longcard */ false, \
+  /* unified-cast */ false, \
+  /* coroutines  */ true, \
+  /* variant-records */ true, \
+  /* local-modules */ true, \
+  /* lexer-debug */ false, \
+  /* parser-debug */ false \
+
 #define M2T_PIM3_OPTIONS { \
   /* verbose */ false, \
   /* synonyms */ true, \
   /* octal-literals */ true, \
   /* escape-tab-and-newline */ false, \
+  /* export_list */ false, \
   /* subtype-cardinals */ false, \
   /* safe-string-termination */ false, \
   /* errant-semicolon */ false, \
@@ -116,6 +137,7 @@ typedef struct {
   /* synonyms */ true, \
   /* octal-literals */ true, \
   /* escape-tab-and-newline */ false, \
+  /* export_list */ false, \
   /* subtype-cardinals */ true, \
   /* safe-string-termination */ true, \
   /* errant-semicolon */ false, \
@@ -133,10 +155,12 @@ typedef struct {
 /* --------------------------------------------------------------------------
  * hidden variable options
  * --------------------------------------------------------------------------
- * Option flags for current, pim3 and pim4
+ * Option flags for current, pim2, pim3 and pim4
  * ----------------------------------------------------------------------- */
 
 static m2t_compiler_options_struct_t options = M2T_DEFAULT_OPTIONS;
+
+static m2t_compiler_options_struct_t pim2_options = M2T_PIM2_OPTIONS;
 
 static m2t_compiler_options_struct_t pim3_options = M2T_PIM3_OPTIONS;
 
@@ -162,7 +186,7 @@ static void report_invalid_option (const char *optstr);
  * ----------------------------------------------------------------------- */
 
 const char *m2t_get_cli_args
-  (int argc, char *argv[], m2c_option_status_t *status) {
+  (int argc, char *argv[], m2t_option_status_t *status) {
   
   const char *filename, *optstr;
   uint_t index, error_count;
@@ -170,8 +194,8 @@ const char *m2t_get_cli_args
   bool permit_non_pim_option = true;
   
   if ((argc < 2) || (argv == NULL)) {
-    m2c_emit_error(M2C_ERROR_MISSING_FILENAME);
-    SET_STATUS(status, M2C_OPTION_STATUS_FAILURE);
+    m2t_emit_error(M2T_ERROR_MISSING_FILENAME);
+    SET_STATUS(status, M2T_OPTION_STATUS_FAILURE);
     return NULL;
   } /* end if */
   
@@ -219,28 +243,38 @@ const char *m2t_get_cli_args
       
       if (opt_match(optstr, "-v") || opt_match(optstr, "--verbose")) {
         options.verbose = true;
+        pim2_options.verbose = true;
         pim3_options.verbose = true;
         pim4_options.verbose = true;
       }
       else if (opt_match(optstr, "--errant-semicolon")) {
         options.errant_semicolon = true;
+        pim2_options.errant_semicolon = true;
         pim3_options.errant_semicolon = true;
         pim4_options.errant_semicolon = true;
       }
       else if (opt_match(optstr, "--no-errant-semicolon")) {
         options.errant_semicolon = false;
+        pim2_options.errant_semicolon = false;
         pim3_options.errant_semicolon = false;
         pim4_options.errant_semicolon = false;
       }
       else if (opt_match(optstr, "--lexer-debug")) {
         options.lexer_debug = true;
+        pim2_options.lexer_debug = true;
         pim3_options.lexer_debug = true;
         pim4_options.lexer_debug = true;
       }
       else if (opt_match(optstr, "--parser-debug")) {
         options.parser_debug = true;
+        pim2_options.parser_debug = true;
         pim3_options.parser_debug = true;
         pim4_options.parser_debug = true;
+      }
+      else if ((permit_pim_option) && (opt_match(optstr, "--pim2"))) {
+        options = pim2_options;
+        permit_pim_option = false;
+        permit_non_pim_option = false;
       }
       else if ((permit_pim_option) && (opt_match(optstr, "--pim3"))) {
         options = pim3_options;
@@ -263,7 +297,6 @@ const char *m2t_get_cli_args
         permit_pim_option = false;
       }
       else if ((permit_non_pim_option) &&
-               (options.prefix_literals == false) &&
                (opt_match(optstr, "--octal-literals"))) {
         options.octal_literals = true;
         permit_pim_option = false;
@@ -305,22 +338,22 @@ const char *m2t_get_cli_args
       }
       else if ((permit_non_pim_option) &&
                (opt_match(optstr, "--type-byte"))) {
-        options.const_parameters = true;
+        options.type_byte = true;
         permit_pim_option = false;
       }
       else if ((permit_non_pim_option) &&
                (opt_match(optstr, "--no-type-byte"))) {
-        options.const_parameters = false;
+        options.type_byte = false;
         permit_pim_option = false;
       }
       else if ((permit_non_pim_option) &&
                (opt_match(optstr, "--type-longcard"))) {
-        options.additional_types = true;
+        options.type_longcard = true;
         permit_pim_option = false;
       }
       else if ((permit_non_pim_option) &&
                (opt_match(optstr, "--no-type-longcard"))) {
-        options.additional_types = false;
+        options.atype_longcard = false;
         permit_pim_option = false;
       }
       else if ((permit_non_pim_option) &&
@@ -398,6 +431,8 @@ void m2t_print_options(void) {
     print_bool(options.octal_literals); printf("\n");
   printf(" escape-tab-and-newline: ");
     print_bool(options.escape_tab_and_newline); printf("\n");
+  printf(" export-list: ");
+    print_bool(options.export_list); printf("\n");
   printf(" subtype-cardinals: ");
     print_bool(options.subtype_cardinals); printf("\n");
   printf(" safe-string-termination: ");
@@ -437,8 +472,8 @@ void m2t_print_option_help(void) {
   printf(" enable verbose diagnostics\n");
   printf("--errant-semicolon or --no-errant-semicolon\n");
   printf(" treat semicolon after statement sequence as warning or error\n");
-  printf("--pim3 and --pim4\n");
-  printf(" strictly follow PIM third or fourth edition\n");
+  printf("--pim2, --pim3 and --pim4\n");
+  printf(" strictly follow PIM second, third or fourth edition\n");
   printf(" mutually exclusive with each other and all options below\n");
   printf("--synonyms and --no-synonyms\n");
   printf(" allow or disallow use of lexical synonyms ~, & and <>\n");
@@ -446,6 +481,8 @@ void m2t_print_option_help(void) {
   printf(" allow or disallow octal literals, only with --suffix-literals\n");
   printf("--escape-tab-and-newline and --no-escape-tab-and-newline\n");
   printf(" interpret '\\\\', '\\t' and '\\n' in string literals or not\n");
+  printf("--export-list and --no-export-list\n");
+  printf(" allow export lists in definition modules or not\n");
   printf("--subtype-cardinals and --no-subtype-cardinals\n");
   printf(" cardinal types are subtypes of integers or not\n");
   printf("--safe-string-termination and --no-safe-string-termination\n");
@@ -510,6 +547,17 @@ bool m2t_option_escape_tab_and_newline (void) {
 
 
 /* --------------------------------------------------------------------------
+ * function m2t_option_export_list()
+ * --------------------------------------------------------------------------
+ * Returns true if option flag export_list is set, otherwise false.
+ * ----------------------------------------------------------------------- */
+
+bool m2t_option_subtypem2t_option_export_list_cardinals (void) {
+  return options.export-list;
+} /* end m2t_option_export_list */
+
+
+/* --------------------------------------------------------------------------
  * function m2t_option_subtype_cardinals()
  * --------------------------------------------------------------------------
  * Returns true if option flag subtype_cardinals is set, otherwise false.
@@ -545,7 +593,7 @@ bool m2t_option_errant_semicolon (void) {
 /* --------------------------------------------------------------------------
  * function m2t_option_type_byte()
  * --------------------------------------------------------------------------
- * Returns true if option flag for type BYTE is set, otherwise false.
+ * Returns true if option flag type_byte is set, otherwise false.
  * ----------------------------------------------------------------------- */
 
 bool m2t_option_type_byte (void) {
@@ -556,7 +604,7 @@ bool m2t_option_type_byte (void) {
 /* --------------------------------------------------------------------------
  * function m2t_option_type_longcard()
  * --------------------------------------------------------------------------
- * Returns true if option flag for type LONGCARD is set, otherwise false.
+ * Returns true if option flag type_longcard is set, otherwise false.
  * ----------------------------------------------------------------------- */
 
 bool m2t_option_type_longcard (void) {
