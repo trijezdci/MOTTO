@@ -18,7 +18,7 @@
  *
  * https://github.com/trijezdci/m2t
  *
- * @file *
+ * @file
  *
  * m2t-lexer.h
  *
