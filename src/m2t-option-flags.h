@@ -124,6 +124,15 @@ bool m2t_option_escape_tab_and_newline (void);
 
 
 /* --------------------------------------------------------------------------
+ * function m2t_option_export_lists()
+ * --------------------------------------------------------------------------
+ * Returns true if option flag export_lists is set, otherwise false.
+ * ----------------------------------------------------------------------- */
+
+bool m2t_option_export_lists (void);
+
+
+/* --------------------------------------------------------------------------
  * function m2t_option_subtype_cardinals()
  * --------------------------------------------------------------------------
  * Returns true if option flag subtype_cardinals is set, otherwise false.
@@ -151,21 +160,21 @@ bool m2t_option_errant_semicolon (void);
 
 
 /* --------------------------------------------------------------------------
- * function m2t_option_byte()
+ * function m2t_option_type_byte()
  * --------------------------------------------------------------------------
- * Returns true if option flag for type BYTE is set, otherwise false.
+ * Returns true if option flag type_byte is set, otherwise false.
  * ----------------------------------------------------------------------- */
 
-bool m2t_option_byte (void);
+bool m2t_option_type_byte (void);
 
 
 /* --------------------------------------------------------------------------
- * function m2t_option_longcard()
+ * function m2t_option_type_longcard()
  * --------------------------------------------------------------------------
- * Returns true if option flag for type LONGCARD is set, otherwise false.
+ * Returns true if option flag type_longcard is set, otherwise false.
  * ----------------------------------------------------------------------- */
 
-bool m2t_option_longcard (void);
+bool m2t_option_type_longcard (void);
 
 
 /* --------------------------------------------------------------------------
