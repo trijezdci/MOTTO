@@ -26,16 +26,16 @@
  *
  * @license
  *
- * M2T is free software: you can redistribute and/or modify it under the
- * terms of the GNU Lesser General Public License (LGPL) either version 2.1
- * or at your choice version 3 as published by the Free Software Foundation.
+ * M2T is free software:  You can redistribute and modify it  under the terms
+ * of the  GNU Lesser General Public License (LGPL) either version 2.1  or at
+ * your choice version 3, both as published by the Free Software Foundation.
  *
- * M2T is distributed in the hope that it will be useful,  but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  Read the license for more details.
+ * M2T is distributed  in the hope  that it will be useful,  but  WITHOUT ANY
+ * WARRANTY; without even  the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR ANY PARTICULAR PURPOSE.  Read the license for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with m2t.  If not, see <https://www.gnu.org/copyleft/lesser.html>.
+ * You should have received  a copy of the  GNU Lesser General Public License
+ * along with M2T.  If not, see <https://www.gnu.org/copyleft/lesser.html>.
  */
 
 #ifndef M2T_COMMON_H
