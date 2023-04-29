@@ -47,15 +47,6 @@
 
 
 /* --------------------------------------------------------------------------
- * Lexical limits, to be moved into m2t-build-params.h
- * ----------------------------------------------------------------------- */
-
-#define M2T_MAX_IDENT_LENGTH 32
-
-#define M2T_COMMENT_NESTING_LIMIT 10
-
-
-/* --------------------------------------------------------------------------
  * opaque type m2t_lexer_t
  * --------------------------------------------------------------------------
  * Opaque pointer type representing a Modula-2 lexer object.
