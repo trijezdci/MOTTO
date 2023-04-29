@@ -1,48 +1,53 @@
-/* M2C Modula-2 Compiler & Translator
- * Copyright (c) 2015-2016 Benjamin Kowarsch
+/* M2T -- Sorce to Source Modula-2 Translator
+ *
+ * Copyright (c) 2016-2023 Benjamin Kowarsch
+ *
+ * Author & Maintainer: Benjamin Kowarsch <org.m2sf>
  *
  * @synopsis
  *
- * M2C is a compiler and translator for the classic Modula-2 programming
- * language as described in the 3rd and 4th editions of Niklaus Wirth's
- * book "Programming in Modula-2" (PIM) published by Springer Verlag.
+ * M2T is a multi-dialect Modula-2 source-to-source translator. It translates
+ * source files  written in the  classic dialects  to semantically equivalent
+ * source files in  Modula-2 Revision 2010 (M2R10).  It supports  the classic
+ * Modula-2 dialects  described in  the 2nd, 3rd and 4th editions  of Niklaus
+ * Wirth's book "Programming in Modula-2" (PIM) published by Springer Verlag.
  *
- * In compiler mode, M2C compiles Modula-2 source via C to object files or
- * executables using the host system's resident C compiler and linker.
- * In translator mode, it translates Modula-2 source to C source.
+ * For more details please visit: https://github.com/trijezdci/m2t/wiki
  *
- * Further information at http://savannah.nongnu.org/projects/m2c/
+ * @repository
+ *
+ * https://github.com/trijezdci/m2t
  *
  * @file
  *
  * m2-token.h
  *
- * Public interface for M2C token type.
+ * Public interface for M2T token type.
  *
  * @license
  *
- * M2C is free software: you can redistribute and/or modify it under the
- * terms of the GNU Lesser General Public License (LGPL) either version 2.1
- * or at your choice version 3 as published by the Free Software Foundation.
+ * M2T is free software:  You can redistribute and modify it  under the terms
+ * of the  GNU Lesser General Public License (LGPL) either version 2.1  or at
+ * your choice version 3, both as published by the Free Software Foundation.
  *
- * M2C is distributed in the hope that it will be useful,  but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  Read the license for more details.
+ * M2T is distributed  in the hope  that it will be useful,  but  WITHOUT ANY
+ * WARRANTY; without even  the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR ANY PARTICULAR PURPOSE.  Read the license for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with m2c.  If not, see <https://www.gnu.org/copyleft/lesser.html>.
+ * You should have received  a copy of the  GNU Lesser General Public License
+ * along with M2T.  If not, see <https://www.gnu.org/copyleft/lesser.html>.
  */
 
-#ifndef M2C_TOKEN_H
-#define M2C_TOKEN_H
+#ifndef M2T_TOKEN_H
+#define M2T_TOKEN_H
 
-#include "m2-common.h"
 
 #include <stdbool.h>
+#include "m2t-common.h"
 
 
 /* --------------------------------------------------------------------------
- * type m2c_token_t
+ * type m2t_token_t
  * --------------------------------------------------------------------------
  * Enumerated token values representing Modula-2 terminal symbols.
  * --------------------------------------------------------------------------
@@ -98,7 +103,7 @@ typedef enum {
   
   /* Identifiers */
   
-  TOKEN_IDENTIFIER,   /* ('_' | Letter) ('_' | Letter | Digit)* */
+  TOKEN_IDENTIFIER,   /* Letter (Letter | Digit)* */
   
   /* Literals */
   
@@ -113,7 +118,7 @@ typedef enum {
   
   /* Pragmas */
   
-  TOKEN_PRAGMA,   /* '<*' Character* '*>' */
+  TOKEN_PRAGMA,   /* '(*$' Character* '*)' */
   
   /* Special Symbols */
   
@@ -152,24 +157,7 @@ typedef enum {
   /* Enumeration Terminator */
   
   TOKEN_END_MARK /* marks the end of this enumeration */
-} m2c_token_t;
-
-
-/* --------------------------------------------------------------------------
- * legacy translations
- * ----------------------------------------------------------------------- */
-
-#define TOKEN_ADDITION TOKEN_PLUS
-#define TOKEN_SUBTRACTION TOKEN_MINUS
-#define TOKEN_MULTIPLICATION TOKEN_ASTERISK
-#define TOKEN_DIVISION TOKEN_SOLIDUS
-#define TOKEN_LESS_THAN TOKEN_LESS
-#define TOKEN_LESS_THAN_OR_EQUAL TOKEN_LESS_EQUAL
-#define TOKEN_GREATER_THAN TOKEN_GREATER
-#define TOKEN_GREATER_THAN_OR_EQUAL TOKEN_GREATER_EQUAL
-#define TOKEN_ASSIGNMENT TOKEN_ASSIGN
-#define TOKEN_LEFT_PARENTHESIS TOKEN_LEFT_PAREN
-#define TOKEN_RIGHT_PARENTHESIS TOKEN_RIGHT_PAREN
+} m2t_token_t;
 
 
 /* --------------------------------------------------------------------------
@@ -189,92 +177,92 @@ typedef enum {
 
 
 /* --------------------------------------------------------------------------
- * function m2c_is_valid_token(token)
+ * function m2t_is_valid_token(token)
  * --------------------------------------------------------------------------
  * Returns TRUE if token represents a terminal symbol, otherwise FALSE.
  * ----------------------------------------------------------------------- */
 
-bool m2c_is_valid_token (m2c_token_t token);
+bool m2t_is_valid_token (m2t_token_t token);
 
 
 /* --------------------------------------------------------------------------
- * function m2c_is_resword_token(token)
+ * function m2t_is_resword_token(token)
  * --------------------------------------------------------------------------
  * Returns TRUE if token represents a reserved word, otherwise FALSE.
  * ----------------------------------------------------------------------- */
 
-bool m2c_is_resword_token (m2c_token_t token);
+bool m2t_is_resword_token (m2t_token_t token);
 
 
 /* --------------------------------------------------------------------------
- * function m2c_is_literal_token(token)
+ * function m2t_is_literal_token(token)
  * --------------------------------------------------------------------------
  * Returns TRUE if token represents a literal, otherwise FALSE.
  * ----------------------------------------------------------------------- */
 
-bool m2c_is_literal_token (m2c_token_t token);
+bool m2t_is_literal_token (m2t_token_t token);
 
 
 /* --------------------------------------------------------------------------
- * function m2c_is_malformed_literal_token(token)
+ * function m2t_is_malformed_literal_token(token)
  * --------------------------------------------------------------------------
  * Returns TRUE if token represents a malformed literal, otherwise FALSE.
  * ----------------------------------------------------------------------- */
 
-bool m2c_is_malformed_literal_token (m2c_token_t token);
+bool m2t_is_malformed_literal_token (m2t_token_t token);
 
 
 /* --------------------------------------------------------------------------
- * function m2c_is_special_symbol_token(token)
+ * function m2t_is_special_symbol_token(token)
  * --------------------------------------------------------------------------
  * Returns TRUE if token represents a special symbol, otherwise FALSE.
  * ----------------------------------------------------------------------- */
 
-bool m2c_is_special_symbol_token (m2c_token_t token);
+bool m2t_is_special_symbol_token (m2t_token_t token);
 
 
 /* --------------------------------------------------------------------------
- * function m2c_token_for_resword(lexeme, length)
+ * function m2t_token_for_resword(lexeme, length)
  * --------------------------------------------------------------------------
  * Tests if the given lexeme represents a reserved word and returns the
  * corresponding token or TOKEN_UNKNOWN if it does not match a reserved word.
  * ----------------------------------------------------------------------- */
 
-m2c_token_t m2c_token_for_resword (const char *lexeme, uint_t length);
+m2t_token_t m2t_token_for_resword (const char *lexeme, uint_t length);
 
 
 /* --------------------------------------------------------------------------
- * function m2c_lexeme_for_resword(token)
+ * function m2t_lexeme_for_resword(token)
  * --------------------------------------------------------------------------
  * Returns an immutable pointer to a NUL terminated character string with
  * the lexeme for the reserved word represented by token.  Returns NULL
  * if the token does not represent a reserved word.
  * ----------------------------------------------------------------------- */
 
-const char *m2c_lexeme_for_resword (m2c_token_t token);
+const char *m2t_lexeme_for_resword (m2t_token_t token);
 
 
 /* --------------------------------------------------------------------------
- * function m2c_lexeme_for_special_symbol(token)
+ * function m2t_lexeme_for_special_symbol(token)
  * --------------------------------------------------------------------------
  * Returns an immutable pointer to a NUL terminated character string with
  * the lexeme for the special symbol represented by token.  Returns NULL
  * if the token does not represent a special symbol.
  * ----------------------------------------------------------------------- */
 
-const char *m2c_lexeme_for_special_symbol (m2c_token_t token);
+const char *m2t_lexeme_for_special_symbol (m2t_token_t token);
 
 
 /* --------------------------------------------------------------------------
- * function m2c_name_for_token(token)
+ * function m2t_name_for_token(token)
  * --------------------------------------------------------------------------
  * Returns an immutable pointer to a NUL terminated character string with
  * a human readable name for token.  Returns NULL token is not a valid token.
  * ----------------------------------------------------------------------- */
 
-const char *m2c_name_for_token (m2c_token_t token);
+const char *m2t_name_for_token (m2t_token_t token);
 
 
-#endif /* M2C_TOKEN_H */
+#endif /* M2T_TOKEN_H */
 
 /* END OF FILE */
