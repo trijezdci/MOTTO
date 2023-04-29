@@ -214,7 +214,7 @@ typedef double m2t_longreal_t;
 
 
 /* --------------------------------------------------------------------------
- * Verify M2C_LOCAL_MODULES_IMPLEMENTED
+ * Verify M2T_LOCAL_MODULES_IMPLEMENTED
  * ----------------------------------------------------------------------- */
 
 #if !defined(M2T_LOCAL_MODULES_IMPLEMENTED)
@@ -223,11 +223,11 @@ typedef double m2t_longreal_t;
 
 
 /* --------------------------------------------------------------------------
- * Verify M2C_VARIANT_RECORDS_IMPLEMENTED
+ * Verify M2T_VARIANT_RECORDS_IMPLEMENTED
  * ----------------------------------------------------------------------- */
 
-#if !defined(M2C_VARIANT_RECORDS_IMPLEMENTED)
-#error "no value defined for M2C_VARIANT_RECORDS_IMPLEMENTED"
+#if !defined(M2T_VARIANT_RECORDS_IMPLEMENTED)
+#error "no value defined for M2T_VARIANT_RECORDS_IMPLEMENTED"
 #endif
 
 
