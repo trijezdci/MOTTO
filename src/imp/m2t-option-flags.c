@@ -81,12 +81,12 @@ typedef struct {
   /* synonyms */ false, \
   /* octal-literals */ false, \
   /* escape-tab-and-newline */ true, \
-  /* export_lists */ true, \
+  /* export_lists */ false, \
   /* subtype-cardinals */ false, \
   /* safe-string-termination */ true, \
   /* errant-semicolon */ false, \
   /* type_byte */ true, \
-  /* atype_longcard */ true, \
+  /* type_longcard */ true, \
   /* unified-cast */ true, \
   /* coroutines  */ false, \
   /* variant-records */ false, \
