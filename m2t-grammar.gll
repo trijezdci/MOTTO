@@ -46,10 +46,10 @@ grammar Modula2;
 /*** Reserved Words ***/
 
 reserved
-  AND, ARGLIST, ARRAY, BEGIN, BY, CASE, CONST, DEFINITION, DIV, DO, ELSE,
-  ELSIF, END, EXIT, EXPORT, FOR, FROM, IF, IMPLEMENTATION, IMPORT, IN, LOOP,
-  MOD, MODULE, NOT, OF, OPAQUE, OR, POINTER, PROCEDURE, QUALIFIED, RECORD,
-  REPEAT, RETURN, SET, THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH;
+  AND, ARRAY, BEGIN, BY, CASE, CONST, DEFINITION, DIV, DO, ELSE, ELSIF, END,
+  EXIT, EXPORT, FOR, FROM, IF, IMPLEMENTATION, IMPORT, IN, LOOP, MOD, MODULE,
+  NOT, OF, OR, POINTER, PROCEDURE, QUALIFIED, RECORD, REPEAT, RETURN, SET,
+  THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH;
 
 
 /*** Non-Terminal Symbols ***/
@@ -61,7 +61,14 @@ compilationUnit :=
   ;
 
 
-/* Definition Module */
+/* Definition Module (PIM2) */
+
+definitionModule :=
+  DEFINITION MODULE moduleIdent ';'
+  import* export? definition* END moduleIdent '.'
+  ;
+  
+/* Definition Module (PIM3/4) */
 
 definitionModule :=
   DEFINITION MODULE moduleIdent ';'
@@ -71,7 +78,7 @@ definitionModule :=
 alias moduleIdent = Ident ;
 
 
-/* Import (PIM) */
+/* Import */
 
 import :=
   ( qualifiedImport | unqualifiedImport ) ';'
@@ -122,7 +129,7 @@ constDefinition :=
 alias constExpression = expression;
 
 
-/* Type Definition (PIM) */
+/* Type Definition */
 
 typeDefinition :=
   Ident ( '=' type )?
@@ -137,16 +144,10 @@ type :=
   ;
 
 
-/* Derived Type or Subrange Type (PIM) */
+/* Derived Type or Subrange Type */
 
 derivedOrSubrangeType :=
   typeIdent range? | range
-  ;
-
-/* Derived Type or Subrange Type (Extended) */
-
-derivedOrSubrangeType :=
-  ( range OF )? typeIdent
   ;
 
 alias typeIdent = qualident ;
@@ -187,45 +188,42 @@ countableType :=
   ;
 
 
-/* Array Type (PIM) */
+/* Array Type */
 
 arrayType :=
   ARRAY countableType ( ',' countableType )* OF type
   ;
 
 
-/* Record Type (PIM) */
+/* Record Type */
 
-alias recordType = variantRecordType;
-
-
-/* Variant Record Type */
-
-variantRecordType :=
-  RECORD variantFieldListSeq END
+recordType :=
+  RECORD fieldList END
   ;
 
 
-/* Variant Record Field List Sequence */
+/* Field List */
 
-variantFieldListSeq :=
-  variantFieldList ( ';' variantFieldList )*
+fieldList :=
+  field ( ';' field )*
   ;
 
 
-/* Variant Record Field List */
+/* Field */
 
-variantFieldList :=
-  fieldList | variantFields
+field :=
+  ( nonVariantField | variantField )*
   ;
+  
+alias nonVariantField = varDeclaration;
 
 
-/* Variant Fields */
+/* Variant Field */
 
-variantFields :=
+variantField :=
   CASE Ident? ':' typeIdent OF
   variant ( '|' variant )*
-  ( ELSE fieldListSequence )?
+  ( ELSE fieldList )?
   END
   ;
 
@@ -233,7 +231,7 @@ variantFields :=
 /* Variant */
 
 variant :=
-  caseLabelList ':' variantFieldListSeq
+  caseLabelList ':' fieldList
   ;
 
 
@@ -249,24 +247,6 @@ caseLabelList :=
 caseLabels :=
   constExpression ( '..' constExpression )?
   ;
-
-
-/* Extensible Record Type */
-
-extensibleRecordType :=
-  RECORD ( '(' baseType ')' )? fieldListSequence END
-  ;
-
-alias baseType = typeIdent ;
-
-
-/* Field List Sequence */
-
-fieldListSequence :=
-  fieldList ( ';' fieldList )*
-  ;
-
-alias fieldList = variableDeclaration ;
 
 
 /* Pointer Type */
@@ -291,32 +271,19 @@ formalType :=
   ;
 
 
-/* Simple Formal Type (PIM) */
+/* Simple Formal Type */
 
 simpleFormalType :=
   ( ARRAY OF )? typeIdent
   ;
 
 
-/* Simple Formal Type (Extended) */
-
-simpleFormalType :=
-  ( ( ARGLIST | ARRAY ) OF )? typeIdent
-  ;
-
-
-/* Attributed Formal Type (PIM) */
+/* Attributed Formal Type */
 
 attributedFormalType :=
   VAR simpleFormalType
   ;
 
-
-/* Attributed Formal Type (Extended) */
-
-attributedFormalType :=
-  ( CONST | VAR ) simpleFormalType
-  ;
 
 /* Procedure Header */
 
@@ -353,18 +320,12 @@ simpleFormalParams :=
   ;
 
 
-/* Attributed Formal Parameters (PIM) */
+/* Attributed Formal Parameters */
 
 attribFormalParams :=
   VAR simpleFormalParams
   ;
 
-
-/* Attributed Formal Parameters (Extended) */
-
-attribFormalParams :=
-  ( CONST | VAR ) simpleFormalParams
-  ;
 
 /* Implementation Module */
 
@@ -373,18 +334,10 @@ implementationModule :=
   ;
 
 
-/* Program Module (PIM) */
+/* Program Module */
 
 programModule :=
   MODULE moduleIdent modulePriority? ';'
-  import* block moduleIdent '.'
-  ;
-
-
-/* Program Module (Extended) */
-
-programModule :=
-  MODULE moduleIdent ';'
   import* block moduleIdent '.'
   ;
 
@@ -403,7 +356,7 @@ block :=
   ;
 
 
-/* Declaration (PIM) */
+/* Declaration */
 
 declaration :=
   CONST ( constDeclaration ';' )* |
@@ -413,52 +366,11 @@ declaration :=
   moduleDeclaration ';'
   ;
 
-/* Declaration (Extended) */
-
-declaration :=
-  CONST ( constDeclaration ';' )* |
-  TYPE ( typeDeclaration ';' )* |
-  VAR ( variableDeclaration ';' )* |
-  procedureDeclaration ';'
-  ;
-
-
-/* Type Declaration (PIM) */
+/* Type Declaration */
 
 typeDeclaration :=
   Ident '=' type
   ;
-
-/* Type Declaration (Extended) */
-
-typeDeclaration :=
-  Ident '=' ( type | varSizeRecordType )
-  ;
-
-/* Private Pointer Type */
-
-privatePointerType :=
-  POINTER TO ( determinateTarget | indeterminateTarget )
-  ;
-
-alias determinateTarget = Ident;
-
-
-/* Indeterminate Target */
-
-indeterminateTarget :=
-  RECORD fieldListSequence
-  indeterminateField
-  END
-  ;
-
-/* Indeterminate Field */
-
-indeterminateField :=
-  '+' Ident : ARRAY sizeFieldIdent OF typeIdent
-  ;
-
-alias sizeFieldIdent = Ident;
 
 
 /* Variable Declaration */
@@ -497,7 +409,7 @@ statementSequence :=
   ;
 
 
-/* Statement (PIM) */
+/* Statement */
 
 statement :=
   assignmentOrProcCall | returnStatement | withStatement | ifStatement |
@@ -505,30 +417,12 @@ statement :=
   forStatement | EXIT
   ;
 
-/* Statement (Extended) */
 
-statement :=
-  assignmentOrProcCall | returnStatement | ifStatement |  caseStatement |
-  loopStatement | whileStatement | repeatStatement | forStatement | EXIT
-  ;
-
-
-/* Assignment Or Procedure Call (PIM) */
+/* Assignment Or Procedure Call */
 
 assignmentOrProcCall :=
   designator ( ':=' expression | actualParameters )?
   ;
-
-/* Assignment Or Procedure Call (Extended) */
-
-assignmentOrProcCall :=
-  designator ( incOrDecSuffix | ':=' expression | actualParameters )?
-  ;
-
-
-/* Increment or Decrement Suffix */
-
-.IncOrDecSuffix := '++' | '--' ;
 
 
 /* Actual Parameters */
@@ -571,18 +465,10 @@ ifStatement :=
 alias boolExpression = expression ;
 
 
-/* CASE Statement (PIM) */
+/* CASE Statement */
 
 caseStatement :=
   CASE expression OF case ( case '|' )*
-  ( ELSE statementSequence )?
-  END
-  ;
-
-/* CASE Statement (Extended) */
-
-caseStatement :=
-  CASE expression OF case ( '|' case )*
   ( ELSE statementSequence )?
   END
   ;
@@ -663,18 +549,9 @@ simpleExpression :=
   ( '+' | '-' )? term ( OperL2 term )*
   ;
 
-/* Level-2 Operator (PIM) */
+/* Level-2 Operator */
 
 .OperL2 = := '+' | '-' | OR ;
-
-/* Level-2 Operator (Extended) */
-
-.OperL2 = := '+' | '-' | OR | SetDiffOp ;
-
-
-/* Set Difference Operator */
-
-.SetDiffOp = '\' ;
 
 
 /* Term */
@@ -744,22 +621,22 @@ Ident :=
   ;
 
 
-/* Prefixed Number Literal */
-
-PrefixedNumberLiteral :=
-  '0' ( 'u' | 'x' ) Base16Digit+
-  ;
-
-.Base16Digit := Digit | 'A' .. 'F' ;
-
-
-/* Suffixed Number Literal */
+/* Suffixed Number Literal (PIM) */
 
 SuffixedNumberLiteral :=
    Base8Digit+ ( 'B' | 'C' ) | Digit Base16Digit* 'H'
   ;
 
 .Base8Digit := '0' .. '7' ;
+
+.Base16Digit := Digit | 'A' .. 'F' ;
+
+
+/* Prefixed Number Literal (Ext) */
+
+PrefixedNumberLiteral :=
+  '0' ( 'u' | 'x' ) Base16Digit+
+  ;
 
 
 /* String Literal */
@@ -810,20 +687,13 @@ Whitespace :=
 .Tabulator := 0u9 ;
 
 
-/* Line Comment */
-
-LineComment :=
-  '!' AnyPrintable* EndOfLine
-  ;
-
-.AnyPrintable := 0u20 .. 0u7E ; /* greedy */
-
-
 /* Block Comment */
 
 BlockComment :=
   '(*' ( AnyPrintable | BlockComment | EndOfLine )* '*)'
   ;
+
+.AnyPrintable := 0u20 .. 0u7E ; /* greedy */
 
 
 /* Disabled Code Section */
