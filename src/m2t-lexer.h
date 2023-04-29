@@ -120,7 +120,7 @@ void m2t_new_lexer
  * post-conditions:
  * o  character code of lookahead character or EOF is returned
  * o  current reading position and line and column counters are updated
- * o  file status is set to M2T_INFILE_STATUC_SUCCESS
+ * o  file status is set to M2T_INFILE_STATUS_SUCCESS
  *
  * error-conditions:
  * o  if infile is NULL upon entry, no operation is carried out
