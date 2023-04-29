@@ -6,7 +6,7 @@
  *
  * @synopsis
  *
- * M2T is a multi-dialect Modula-2 source-to-course translator. It translates
+ * M2T is a multi-dialect Modula-2 source-to-source translator. It translates
  * source files  written in the  classic dialects  to semantically equivalent
  * source files in  Modula-2 Revision 2010 (M2R10).  It supports  the classic
  * Modula-2 dialects  described in  the 2nd, 3rd and 4th editions  of Niklaus
