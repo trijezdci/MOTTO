@@ -1,4 +1,4 @@
-/* M2T -- Sorce to Source Modula-2 Translator
+/* MOTTO -- Sorce to Source Modula-2 Translator
  *
  * Copyright (c) 2016-2023 Benjamin Kowarsch
  *
@@ -6,36 +6,36 @@
  *
  * @synopsis
  *
- * M2T is a multi-dialect Modula-2 source-to-source translator. It translates
- * source files  written in the  classic dialects  to semantically equivalent
- * source files in  Modula-2 Revision 2010 (M2R10).  It supports  the classic
- * Modula-2 dialects  described in  the 2nd, 3rd and 4th editions  of Niklaus
- * Wirth's book "Programming in Modula-2" (PIM) published by Springer Verlag.
+ * MOTTO  is  a  source-to-source  Modula-2 translator.  It translates source
+ * files written in the  classic dialects  to  semantically equivalent source
+ * source files in  C99 and  Modula-2 Revision 2010 (M2R10).  It supports the
+ * classic Modula-2 dialects  described in the  2nd, 3rd and 4th editions  of
+ * Niklaus Wirth's book "Programming in Modula-2" published by Springer.
  *
  * For more details please visit: https://github.com/trijezdci/m2t/wiki
  *
  * @repository
  *
- * https://github.com/trijezdci/m2t
+ * https://github.com/trijezdci/motto
  *
  * @file
  *
- * m2t-grammar.gll
+ * m2-grammar.gll
  *
  * Grammar of classic Modula-2 source files.
  *
  * @license
  *
- * M2T is free software:  You can redistribute and modify it  under the terms
+ * MOTTO is free software: You can redistribute and modify it under the terms
  * of the  GNU Lesser General Public License (LGPL) either version 2.1  or at
  * your choice version 3, both as published by the Free Software Foundation.
  *
- * M2T is distributed  in the hope  that it will be useful,  but  WITHOUT ANY
+ * MOTTO is distributed in the hope that it will be useful,  but  WITHOUT ANY
  * WARRANTY; without even  the implied warranty of MERCHANTABILITY or FITNESS
  * FOR ANY PARTICULAR PURPOSE.  Read the license for more details.
  *
  * You should have received  a copy of the  GNU Lesser General Public License
- * along with M2T.  If not, see <https://www.gnu.org/copyleft/lesser.html>.
+ * along with MOTTO.  If not, see <https://www.gnu.org/copyleft/lesser.html>.
  */
 
 grammar Modula2;
@@ -44,9 +44,9 @@ grammar Modula2;
 
 reserved
   AND, ARRAY, BEGIN, BY, CASE, CONST, DEFINITION, DIV, DO, ELSE, ELSIF, END,
-  EXIT, EXPORT, FOR, FROM, IF, IMPLEMENTATION, IMPORT, IN, LOOP, MOD, MODULE,
-  NOT, OF, OR, POINTER, PROCEDURE, QUALIFIED, RECORD, REPEAT, RETURN, SET,
-  THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH;
+  EXIT, EXPORT, FOR, FOREIGN, FROM, IF, IMPLEMENTATION, IMPORT, IN, LOOP,
+  MOD, MODULE, NOT, OF, OR, POINTER, PROCEDURE, QUALIFIED, RECORD, REPEAT,
+  RETURN, SET, THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH;
 
 
 /*** Non-Terminal Symbols ***/
@@ -65,10 +65,10 @@ definitionModule :=
   import* export? definition* END moduleIdent '.'
   ;
   
-/* Definition Module (PIM3/4) */
+/* Definition Module (PIM3/4/MOCKA) */
 
 definitionModule :=
-  DEFINITION MODULE moduleIdent ';'
+  FOREIGN? DEFINITION MODULE moduleIdent ';'
   import* definition* END moduleIdent '.'
   ;
 
