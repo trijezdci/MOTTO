@@ -796,6 +796,11 @@ static m2c_string_t new_string_from_string (char *str, uint_t length) {
   m2c_string_t new_string;
   uint_t index;
   
+  /* guard against integer overflow in allocation size */
+  if (length > (size_t)(-1) - sizeof(m2c_string_struct_t) - 1) {
+    return NULL;
+  } /* end if */
+  
   /* allocate new string object */
   new_string = malloc(sizeof(m2c_string_struct_t) + length + 1);
   
